@@ -1,0 +1,11 @@
+.next
+.env.local
+.env
+node_modules
+pnpm-lock.yaml
+bun.lockb
+prisma
+postcss.config.mjs
+next.config.mjs
+next-env.d.ts
+bun.lockb
