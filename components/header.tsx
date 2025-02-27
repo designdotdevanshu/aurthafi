@@ -24,7 +24,6 @@ async function Header() {
   };
 
   const UserButton = () => {
-    console.log("user ->", user);
     return user ? (
       <Avatar>
         <AvatarImage src={user.user_metadata.avatar_url} className="size-10" />
