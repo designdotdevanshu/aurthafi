@@ -24,10 +24,14 @@ async function Header() {
   };
 
   const UserButton = () => {
+    console.log("user ->", user);
     return user ? (
       <Avatar>
         <AvatarImage src={user.user_metadata.avatar_url} className="size-10" />
-        <AvatarFallback>{user.user_metadata.displayName[0]}</AvatarFallback>
+        <AvatarFallback>
+          {user.user_metadata?.displayName?.[0] ||
+            user.user_metadata?.full_name?.[0]}
+        </AvatarFallback>
       </Avatar>
     ) : null;
   };
