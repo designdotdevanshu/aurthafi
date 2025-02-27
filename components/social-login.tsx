@@ -73,8 +73,8 @@ function InstagramLogin() {
 function SocialLogin() {
   return (
     <div className="flex flex-col space-y-4">
-      {/* <GithubLogin /> */}
-      {/* <GoogleLogin /> */}
+      <GithubLogin />
+      <GoogleLogin />
       {/* <InstagramLogin /> */}
     </div>
   );
