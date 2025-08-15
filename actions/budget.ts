@@ -19,10 +19,16 @@ export interface GetCurrentUserBudgetResponse {
 }
 
 export async function getCurrentBudget(
-  accountId: string,
+  financialAccountId: string,
 ): Promise<GetCurrentUserBudgetResponse> {
   try {
-    const { id: userId } = await getUserSession();
+    const user = await getUserSession();
+
+    if (!user?.id) {
+      throw new Error("User not authenticated");
+    }
+
+    const userId = user.id;
 
     const budget = await db.budget.findFirst({
       where: { userId },
@@ -49,7 +55,7 @@ export async function getCurrentBudget(
           gte: startOfMonth,
           lte: endOfMonth,
         },
-        accountId,
+        financialAccountId,
       },
       _sum: {
         amount: true,
@@ -76,7 +82,13 @@ export async function updateBudget(amount: number): Promise<{
   error?: string;
 }> {
   try {
-    const { id: userId } = await getUserSession();
+    const user = await getUserSession();
+
+    if (!user?.id) {
+      throw new Error("User not authenticated");
+    }
+
+    const userId = user.id;
 
     // Update or create budget
     const budget = await db.budget.upsert({

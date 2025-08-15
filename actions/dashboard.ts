@@ -10,9 +10,15 @@ import { Account } from "./account";
 
 export async function getUserAccounts(): Promise<Account[]> {
   try {
-    const { id: userId } = await getUserSession();
+    const user = await getUserSession();
 
-    const accounts = await db.account.findMany({
+    if (!user?.id) {
+      throw new Error("User not authenticated");
+    }
+
+    const userId = user.id;
+
+    const accounts = await db.financialAccount.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
       include: {
@@ -37,7 +43,13 @@ export async function getUserAccounts(): Promise<Account[]> {
 
 export async function createAccount(data: Account) {
   return asyncHandler(async function (): Promise<Account> {
-    const { id: userId } = await getUserSession();
+    const user = await getUserSession();
+
+    if (!user?.id) {
+      throw new Error("User not authenticated");
+    }
+
+    const userId = user.id;
 
     // Convert balance to float before saving
     const balanceFloat = Number(data.balance);
@@ -46,7 +58,7 @@ export async function createAccount(data: Account) {
     }
 
     // Check if this is the user's first account
-    const existingAccounts = await db.account.findMany({
+    const existingAccounts = await db.financialAccount.findMany({
       where: { userId },
     });
 
@@ -57,14 +69,14 @@ export async function createAccount(data: Account) {
 
     // If this account should be default, unset other default accounts
     if (shouldBeDefault) {
-      await db.account.updateMany({
+      await db.financialAccount.updateMany({
         where: { userId, isDefault: true },
         data: { isDefault: false },
       });
     }
 
     // Create new account
-    const account = await db.account.create({
+    const account = await db.financialAccount.create({
       data: {
         ...data,
         userId,
@@ -83,7 +95,13 @@ export async function createAccount(data: Account) {
 
 export async function getDashboardData(): Promise<Transaction[]> {
   try {
-    const { id: userId } = await getUserSession();
+    const user = await getUserSession();
+
+    if (!user?.id) {
+      throw new Error("User not authenticated");
+    }
+
+    const userId = user.id;
 
     // Get all user transactions
     const transactions = await db.transaction.findMany({

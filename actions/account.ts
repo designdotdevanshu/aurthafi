@@ -3,14 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/prisma";
 import { getUserSession } from "./auth";
-import { AccountType } from "@prisma/client";
+import { FinancialAccountType } from "@prisma/client";
 import { errorHandler, serializeDecimal } from "@/lib/utils";
 import { Transaction } from "./transaction";
 
 export interface Account {
   name: string;
   id: string;
-  type: AccountType;
+  type: FinancialAccountType;
   balance: number;
   isDefault: boolean;
   userId: string;
@@ -36,9 +36,15 @@ export async function getAccountWithTransactions(
   if (!id) return null;
 
   try {
-    const { id: userId } = await getUserSession();
+    const user = await getUserSession();
 
-    const account = await db.account.findUnique({
+    if (!user?.id) {
+      throw new Error("User not authenticated");
+    }
+
+    const userId = user.id;
+
+    const account = await db.financialAccount.findUnique({
       where: { id, userId },
       include: {
         transactions: {
@@ -63,7 +69,13 @@ export async function getAccountWithTransactions(
 
 export async function bulkDeleteTransactions(transactionIds: string[]) {
   try {
-    const { id: userId } = await getUserSession();
+    const user = await getUserSession();
+
+    if (!user?.id) {
+      throw new Error("User not authenticated");
+    }
+
+    const userId = user.id;
     // Get transactions to calculate balance changes
     const transactions = await db.transaction.findMany({
       where: {
@@ -79,7 +91,8 @@ export async function bulkDeleteTransactions(transactionIds: string[]) {
           transaction.type === "EXPENSE"
             ? transaction.amount.toNumber()
             : -transaction.amount.toNumber();
-        acc[transaction.accountId] = (acc[transaction.accountId] || 0) + change;
+        acc[transaction.financialAccountId] =
+          (acc[transaction.financialAccountId] || 0) + change;
         return acc;
       },
       {} as Record<string, number>,
@@ -99,7 +112,7 @@ export async function bulkDeleteTransactions(transactionIds: string[]) {
       for (const [accountId, balanceChange] of Object.entries(
         accountBalanceChanges,
       )) {
-        await tx.account.update({
+        await tx.financialAccount.update({
           where: { id: accountId },
           data: {
             balance: {
@@ -123,10 +136,16 @@ export async function updateDefaultAccount(
   id: string,
 ): Promise<AccountResponse | null> {
   try {
-    const { id: userId } = await getUserSession();
+    const user = await getUserSession();
+
+    if (!user?.id) {
+      throw new Error("User not authenticated");
+    }
+
+    const userId = user.id;
 
     // First, unset any existing default account
-    await db.account.updateMany({
+    await db.financialAccount.updateMany({
       where: {
         userId,
         isDefault: true,
@@ -135,7 +154,7 @@ export async function updateDefaultAccount(
     });
 
     // Then set the new default account
-    const account = await db.account.update({
+    const account = await db.financialAccount.update({
       where: { id, userId },
       data: { isDefault: true },
     });

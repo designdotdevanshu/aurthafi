@@ -23,7 +23,7 @@ export interface Transaction {
   lastProcessed: Date | null;
   status: TransactionStatus;
   userId: string;
-  accountId: string;
+  financialAccountId: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -43,19 +43,25 @@ export async function createTransaction(
   data: Transaction,
 ): Promise<TransactionResponse> {
   try {
-    const { id: userId } = await getUserSession();
+    const user = await getUserSession();
 
-    const account = await db.account.findUnique({
-      where: { id: data.accountId, userId },
+    if (!user?.id) {
+      throw new Error("User not authenticated");
+    }
+
+    const userId = user.id;
+
+    const financialAccount = await db.financialAccount.findUnique({
+      where: { id: data.financialAccountId, userId },
     });
 
-    if (!account) throw new Error("Account not found");
+    if (!financialAccount) throw new Error("FinancialAccount not found");
 
     // Calculate new balance
     const balanceChange = data.type === "EXPENSE" ? -data.amount : data.amount;
-    const newBalance = Number(account.balance) + Number(balanceChange);
+    const newBalance = Number(financialAccount.balance) + Number(balanceChange);
 
-    // Create transaction and update account balance
+    // Create transaction and update financialAccount balance
     const transaction = await db.$transaction(async (tx) => {
       const newTransaction = await tx.transaction.create({
         data: {
@@ -68,8 +74,8 @@ export async function createTransaction(
         },
       });
 
-      await tx.account.update({
-        where: { id: data.accountId },
+      await tx.financialAccount.update({
+        where: { id: data.financialAccountId },
         data: { balance: newBalance },
       });
 
@@ -77,7 +83,7 @@ export async function createTransaction(
     });
 
     revalidatePath("/dashboard");
-    revalidatePath(`/account/${transaction.accountId}`);
+    revalidatePath(`/financialAccount/${transaction.financialAccountId}`);
 
     return { success: true, data: serializeAmount(transaction) };
   } catch (error: any) {
@@ -87,7 +93,13 @@ export async function createTransaction(
 
 export async function getTransaction(id: string): Promise<Transaction | null> {
   try {
-    const { id: userId } = await getUserSession();
+    const user = await getUserSession();
+
+    if (!user?.id) {
+      throw new Error("User not authenticated");
+    }
+
+    const userId = user.id;
 
     const transaction = await db.transaction.findUnique({
       where: { id, userId },
@@ -105,7 +117,7 @@ export async function updateTransaction(
   id: string,
   data: {
     type: TransactionType; // Use Prisma's enum for type safety
-    accountId: string;
+    financialAccountId: string;
     amount: number;
     isRecurring: boolean;
     recurringInterval: RecurringInterval;
@@ -113,12 +125,18 @@ export async function updateTransaction(
   },
 ) {
   try {
-    const { id: userId } = await getUserSession();
+    const user = await getUserSession();
+
+    if (!user?.id) {
+      throw new Error("User not authenticated");
+    }
+
+    const userId = user.id;
 
     // Get original transaction to calculate balance change
     const originalTransaction = await db.transaction.findUnique({
       where: { id, userId },
-      include: { account: true },
+      include: { financialAccount: true },
     });
 
     if (!originalTransaction) throw new Error("Transaction not found");
@@ -134,7 +152,7 @@ export async function updateTransaction(
 
     const netBalanceChange = newBalanceChange - oldBalanceChange;
 
-    // Update transaction and account balance in a transaction
+    // Update transaction and financialAccount balance in a transaction
     const transaction = await db.$transaction(async (tx) => {
       const updated = await tx.transaction.update({
         where: { id, userId },
@@ -147,9 +165,9 @@ export async function updateTransaction(
         },
       });
 
-      // Update account balance
-      await tx.account.update({
-        where: { id: data.accountId },
+      // Update financialAccount balance
+      await tx.financialAccount.update({
+        where: { id: data.financialAccountId },
         data: {
           balance: {
             increment: netBalanceChange,
@@ -161,7 +179,7 @@ export async function updateTransaction(
     });
 
     revalidatePath("/dashboard");
-    revalidatePath(`/account/${data.accountId}`);
+    revalidatePath(`/financialAccount/${data.financialAccountId}`);
 
     return { success: true, data: serializeAmount(transaction) };
   } catch (error: any) {
@@ -172,11 +190,17 @@ export async function updateTransaction(
 // Get User Transactions
 export async function getUserTransactions(query = {}) {
   try {
-    const { id: userId } = await getUserSession();
+    const user = await getUserSession();
+
+    if (!user?.id) {
+      throw new Error("User not authenticated");
+    }
+
+    const userId = user.id;
 
     const transactions = await db.transaction.findMany({
       where: { ...query, userId },
-      include: { account: true },
+      include: { financialAccount: true },
       orderBy: { date: "desc" },
     });
 
