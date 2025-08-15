@@ -1,59 +1,45 @@
-// import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-// import { NextResponse } from "next/server";
-
-// const isProtectedRoute = createRouteMatcher([
-//   "/dashboard(.*)",
-//   "/account(.*)",
-//   "/transaction(.*)",
-// ]);
-
-// // const isPublicRoute = createRouteMatcher(["/"]);
-
-// export default clerkMiddleware(async function (auth, req) {
-//   const { userId } = await auth();
-
-//   if (!userId && isProtectedRoute(req)) {
-//     const { redirectToSignIn } = await auth();
-//     return redirectToSignIn();
-//   }
-
-//   // // redirect to dashboard if user is signed in
-//   // if (userId && isPublicRoute(req)) {
-//   //   return NextResponse.redirect(new URL("/dashboard", req.url));
-//   // }
-
-//   return NextResponse.next();
-// });
-
-// export const config = {
-//   matcher: [
-//     /*
-//      * Match all request paths except for the ones starting with:
-//      * - _next/static (static files)
-//      * - _next/image (image optimization files)
-//      * - favicon.ico (favicon file)
-//      * Feel free to modify this pattern to include more paths.
-//      */
-//     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-//   ],
-// };
-
-import { type NextRequest } from "next/server";
-import { updateSession } from "@/utils/supabase/middleware";
+import { NextRequest, NextResponse } from "next/server";
+import { getSessionCookie } from "better-auth/cookies";
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+  const sessionCookie = getSessionCookie(request);
+  const { pathname, search } = request.nextUrl;
+
+  const authRoutes = [
+    "/signin",
+    "/signup",
+    "/forgot-password",
+    "/reset-password",
+  ];
+  const protectedRoutes = ["/dashboard", "/transaction", "/profile"];
+
+  // If authenticated, block access to auth pages
+  if (sessionCookie && authRoutes.some((route) => pathname.startsWith(route))) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  // If unauthenticated, block access to protected pages
+  if (
+    !sessionCookie &&
+    protectedRoutes.some((route) => pathname.startsWith(route))
+  ) {
+    const redirectUrl = new URL("/signin", request.url);
+    redirectUrl.searchParams.set("redirectTo", pathname + search);
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
-     */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/dashboard/:path*",
+    "/transaction/:path*",
+    "/profile/:path*",
+    "/auth/:path*",
+    "/signin",
+    "/signup",
+    "/forgot-password",
+    "/reset-password",
   ],
 };
