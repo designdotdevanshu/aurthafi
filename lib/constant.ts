@@ -9,10 +9,10 @@ const COLORS = [
 ];
 
 const CURRENCY = {
-  CODE: "USD",
-  SYMBOL: "$",
-  // CODE: "INR",
-  // SYMBOL: "₹",
+  // CODE: "USD",
+  // SYMBOL: "$",
+  CODE: "INR",
+  SYMBOL: "₹",
   PRECISION: 2,
 };
 
