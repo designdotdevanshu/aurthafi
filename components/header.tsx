@@ -1,36 +1,32 @@
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/server";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LogoutButton } from "./signout-button";
 import { LayoutDashboard, PenBox } from "lucide-react";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 async function Header() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const user = session?.user;
 
   const SignedIn = ({ children }: { children: React.ReactNode }) => {
     return user ? children : null;
   };
 
   const SignedOut = ({ children }: { children: React.ReactNode }) => {
-    return !user ? children : null;
+    return user ? null : children;
   };
 
   const SignInButton = ({ children }: { children: React.ReactNode }) => {
-    return !user ? <Link href="/auth/signin">{children}</Link> : null;
+    return user ? null : <Link href="/signin">{children}</Link>;
   };
 
   const UserButton = () => {
     return user ? (
       <Avatar>
-        <AvatarImage src={user.user_metadata.avatar_url} className="size-10" />
-        <AvatarFallback>
-          {user.user_metadata?.displayName?.[0] ||
-            user.user_metadata?.full_name?.[0]}
-        </AvatarFallback>
+        <AvatarImage src={user?.image ?? ""} className="size-10" />
+        <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
       </Avatar>
     ) : null;
   };

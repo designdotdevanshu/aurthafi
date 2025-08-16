@@ -2,14 +2,20 @@
 
 import { toast } from "sonner";
 import { Button } from "./ui/button";
-import { signout } from "@/actions/auth";
+import { authClient } from "@/lib/auth-client";
 
 export function LogoutButton() {
   const handleLogout = async () => {
     const confirmLogout = window.confirm("Are you sure you want to log out?");
     if (confirmLogout) {
-      await signout();
-      toast("You have been signed out.");
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            toast("You have been signed out.");
+            window.location.href = "/signin";
+          },
+        },
+      });
     }
   };
 
