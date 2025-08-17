@@ -65,7 +65,7 @@ async function processRecurringTransaction(transaction: Transaction) {
         date: new Date(),
         category: transaction.category,
         userId: transaction.userId,
-        accountId: transaction.accountId,
+        financialAccountId: transaction.financialAccountId,
         isRecurring: false,
       },
     });
@@ -76,8 +76,8 @@ async function processRecurringTransaction(transaction: Transaction) {
         ? -transaction.amount.toNumber()
         : transaction.amount.toNumber();
 
-    await tx.account.update({
-      where: { id: transaction.accountId },
+    await tx.financialAccount.update({
+      where: { id: transaction.financialAccountId },
       data: { balance: { increment: balanceChange } },
     });
 
