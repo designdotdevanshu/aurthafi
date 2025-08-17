@@ -61,7 +61,7 @@ export function AddTransactionForm({
             type: initialData.type,
             amount: initialData.amount.toString(),
             description: initialData.description || "",
-            accountId: initialData.accountId,
+            financialAccountId: initialData.financialAccountId,
             category: initialData.category,
             date: new Date(initialData.date),
             isRecurring: initialData.isRecurring,
@@ -73,7 +73,7 @@ export function AddTransactionForm({
             type: "EXPENSE",
             amount: "",
             description: "",
-            accountId: accounts?.find((ac) => ac.isDefault)?.id,
+            financialAccountId: accounts?.find((ac) => ac.isDefault)?.id,
             category: "",
             date: new Date(),
             isRecurring: false,
@@ -106,7 +106,7 @@ export function AddTransactionForm({
           : "Transaction created successfully",
       );
       form.reset();
-      router.push(`/account/${transactionResult.data.accountId}`);
+      router.push(`/account/${transactionResult.data.financialAccountId}`);
     }
   }, [transactionResult, transactionLoading, editMode]);
 

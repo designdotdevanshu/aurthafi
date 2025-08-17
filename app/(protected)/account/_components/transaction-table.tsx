@@ -281,7 +281,7 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
         </div>
       </div>
 
-      <AlertDialog open={isDialogOpen}>
+      <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>

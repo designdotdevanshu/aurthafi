@@ -38,7 +38,7 @@ export function DashboardOverview({
 
   // Filter transactions for selected account
   const accountTransactions = transactions.filter(
-    (t) => t.accountId === selectedAccountId,
+    (t) => t.financialAccountId === selectedAccountId,
   );
 
   // Get recent transactions (last 5)
