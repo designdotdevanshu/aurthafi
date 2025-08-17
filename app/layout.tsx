@@ -1,20 +1,8 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { geistMono, geistSans } from "./fonts";
 import { Toaster } from "@/components/ui/sonner";
 import { Header } from "@/components/header";
-// import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
 export const metadata: Metadata = {
   title: "AurthaFi",
@@ -26,17 +14,18 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="scroll-pt-10 scroll-smooth">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Header />
         <main className="min-h-screen">{children}</main>
-        <Toaster richColors />
+        <Toaster position="bottom-right" expand={false} richColors={true} />
 
         {/* footer */}
         <footer className="bg-blue-50 py-4">
           <div className="container mx-auto px-4 text-center">
             <code> {"<Coded/>"} </code> by{" "}
             <a
-              href="https://www.devanshu.live/x"
+              href="https://itsdevanshu.vercel.app/x"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 underline-offset-4 hover:underline">
