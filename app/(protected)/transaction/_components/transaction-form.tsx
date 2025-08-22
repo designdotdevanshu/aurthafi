@@ -28,6 +28,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ReceiptScanner } from "./recipt-scanner";
 import { Switch } from "@/components/ui/switch";
 import { Account } from "@/actions/account";
 import { Category } from "@/data/categories";
@@ -98,6 +99,25 @@ export function AddTransactionForm({
     else transactionFn(formData);
   };
 
+  const handleScanComplete = (scannedData: {
+    amount: number;
+    date: string;
+    description?: string;
+    category?: string;
+  }) => {
+    if (scannedData) {
+      form.setValue("amount", scannedData.amount.toString());
+      form.setValue("date", new Date(scannedData.date));
+      if (scannedData.description) {
+        form.setValue("description", scannedData.description);
+      }
+      if (scannedData.category) {
+        form.setValue("category", scannedData.category);
+      }
+      toast.success("Receipt scanned successfully");
+    }
+  };
+
   useEffect(() => {
     if (transactionResult?.success && !transactionLoading) {
       toast.success(
@@ -117,6 +137,9 @@ export function AddTransactionForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Receipt Scanner - Only show in create mode */}
+        {!editMode && <ReceiptScanner onScanComplete={handleScanComplete} />}
+
         <SelectField
           control={form.control}
           name="type"
