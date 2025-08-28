@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
+import { GithubIcon } from "lucide-react";
 
 function HeroSection() {
   return (
@@ -19,18 +20,19 @@ function HeroSection() {
               An AI-powered financial management platform that helps you track,
               analyze, and optimize your spending with real-time insights.
             </p>
-            <div className="flex justify-center space-x-4">
+            <div className="mb-8 flex justify-center space-x-4">
               <Link href="/dashboard">
                 <Button size="lg" className="px-8">
                   Get Started
                 </Button>
               </Link>
               <a
-                href="https://www.youtube.com/@designdotdevanshu"
+                href="https://github.com/designdotdevanshu/aurthafi"
                 target="_blank"
                 rel="noopener noreferrer">
                 <Button size="lg" variant="outline" className="px-8">
-                  Watch Demo
+                  <GithubIcon size={20} />
+                  View on GitHub
                 </Button>
               </a>
             </div>
