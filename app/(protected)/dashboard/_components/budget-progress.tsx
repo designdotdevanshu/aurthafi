@@ -101,7 +101,7 @@ export function BudgetProgress({
         <div className="flex-1">
           <CardTitle className="text-sm font-medium">
             Monthly Budget (Default Account) (
-            <kbd className="rounded bg-gray-100 p-1">Ctrl</kbd> +{" "}
+            <kbd className="rounded bg-gray-100 p-1">⌘</kbd> +{" "}
             <kbd className="rounded bg-gray-100 p-1">B</kbd>)
           </CardTitle>
           <div className="mt-1 flex items-center gap-2">

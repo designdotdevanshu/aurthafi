@@ -11,7 +11,12 @@ export async function middleware(request: NextRequest) {
     "/forgot-password",
     "/reset-password",
   ];
-  const protectedRoutes = ["/dashboard", "/transaction","/account", "/profile"];
+  const protectedRoutes = [
+    "/dashboard",
+    "/transaction",
+    "/account",
+    "/profile",
+  ];
 
   // If authenticated, block access to auth pages
   if (sessionCookie && authRoutes.some((route) => pathname.startsWith(route))) {
