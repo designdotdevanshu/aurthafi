@@ -2,7 +2,7 @@ export * from "./cn";
 
 // Utility to handle errors
 export function handleError(error: any): any {
-  console.error("Supabase error occurred", error);
+  console.error("Error:", error);
   // throw new Error(error.message || "An unexpected error occurred");
   // return error.message || "An unexpected error occurred";
   return {

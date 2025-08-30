@@ -119,7 +119,7 @@ export function CreateAccountDrawer({
                 </div>
                 <FieldWrapper
                   control={form.control}
-                  name="isRecurring"
+                  name="isDefault"
                   render={(field) => (
                     <Switch
                       id="isDefault"

@@ -1,12 +1,13 @@
 "use client";
 
-import { InputField } from "@/components/reusable-form-fields";
+import { Suspense } from "react";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+import { InputField } from "@/components/reusable-form-fields";
 
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -54,7 +55,7 @@ function getLoginErrorMessage(error: { code?: string; message?: string }) {
   );
 }
 
-export default function LoginPage() {
+function LoginForm() {
   const searchParams = useSearchParams();
   const callbackURL = searchParams.get("redirectTo") || "/dashboard";
 
@@ -129,5 +130,13 @@ export default function LoginPage() {
 
       <SocialLogin callbackURL={callbackURL} />
     </AuthLayout>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }
