@@ -67,8 +67,7 @@ export default function SignupPage() {
       ...payload,
       callbackURL: "/dashboard",
       fetchOptions: {
-        onSuccess: (res) => {
-          console.log("Signup successful:", res);
+        onSuccess: () => {
           toast.success("Welcome to AurthaFi!");
         },
         onError: ({ error }) => {

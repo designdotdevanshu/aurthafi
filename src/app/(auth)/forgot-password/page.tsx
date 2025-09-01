@@ -27,7 +27,7 @@ export default function ForgotPassword() {
       });
 
       if (error) {
-        console.log("Password reset error:", error);
+        console.error("Password reset error:", error);
         setMessage(`Error: ${error.message || "Failed to send reset email"}`);
         setMessageType("error");
       } else {
@@ -38,7 +38,7 @@ export default function ForgotPassword() {
         setEmail(""); // Clear email field on success
       }
     } catch (err) {
-      console.log("Unexpected error:", err);
+      console.error("Unexpected error:", err);
       setMessage("An unexpected error occurred. Please try again.");
       setMessageType("error");
     } finally {

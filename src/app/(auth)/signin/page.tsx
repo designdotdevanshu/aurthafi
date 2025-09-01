@@ -67,8 +67,7 @@ function LoginForm() {
     await signIn.email(
       { ...data, callbackURL },
       {
-        onSuccess: (res) => {
-          console.log("Login successful:", res);
+        onSuccess: () => {
           toast.success("Welcome back to AurthaFi!");
           window.location.href = callbackURL;
         },
