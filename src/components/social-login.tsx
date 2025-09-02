@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 import {
   IconBrandGithub,
   IconBrandGoogle,
-  IconBrandInstagram,
+  IconBrandFacebook,
 } from "@tabler/icons-react";
 
 type Provider = "github" | "google" | "facebook";
@@ -17,7 +17,7 @@ const PROVIDERS: Record<Provider, { label: string; icon: React.ElementType }> =
   {
     github: { label: "Github", icon: IconBrandGithub },
     google: { label: "Google", icon: IconBrandGoogle },
-    facebook: { label: "Instagram", icon: IconBrandInstagram }, // your Instagram uses Facebook provider
+    facebook: { label: "Facebook", icon: IconBrandFacebook },
   };
 
 async function signInWithProvider(
@@ -79,7 +79,7 @@ function SocialLogin({ callbackURL = "/dashboard" }) {
     <div className="flex flex-col space-y-4">
       <ProviderLogin provider="github" callbackURL={callbackURL} />
       <ProviderLogin provider="google" callbackURL={callbackURL} />
-      {/* <ProviderLogin provider="facebook" callbackURL={callbackURL} /> */}
+      <ProviderLogin provider="facebook" callbackURL={callbackURL} />
     </div>
   );
 }
