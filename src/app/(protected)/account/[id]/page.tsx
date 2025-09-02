@@ -6,9 +6,9 @@ import { AccountChartLoader } from "../_components/account-chart-loader";
 import { TransactionTableLoader } from "../_components/transaction-table-loader";
 
 interface AccountPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 const AccountChart = dynamic(
@@ -29,7 +29,8 @@ const TransactionTable = dynamic(
 );
 
 export default async function AccountPage({ params }: AccountPageProps) {
-  const accountData = await getAccountWithTransactions(params.id);
+  const { id } = await params;
+  const accountData = await getAccountWithTransactions(id);
 
   if (!accountData) {
     notFound();
