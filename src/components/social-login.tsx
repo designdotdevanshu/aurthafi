@@ -1,9 +1,9 @@
-import { BottomGradient } from "./auth-layout";
-import { Button } from "./ui/button";
 import { useTransition } from "react";
-import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { BottomGradient } from "./auth-layout";
+import { Button } from "./ui/button";
+import { Loader2 } from "lucide-react";
 
 import {
   IconBrandGithub,
