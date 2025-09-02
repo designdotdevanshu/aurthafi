@@ -43,7 +43,7 @@ export const auth = betterAuth({
 
         console.log("Email sent successfully:", result);
       } catch (error) {
-        console.log("Failed to send reset email:", error);
+        console.error("Failed to send reset email:", error);
         throw error; // Re-throw to let better-auth handle it
       }
     },
@@ -52,6 +52,10 @@ export const auth = betterAuth({
     github: {
       clientId: process.env.GITHUB_CLIENT_ID as string,
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    },
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
 
