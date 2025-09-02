@@ -102,12 +102,14 @@ const toDecimal = (v: DecimalLike) =>
 /** Recursively convert Prisma.Decimal to number for JSON safety. */
 function serializeDecimals<T>(obj: T): T {
   if (obj === null || obj === undefined) return obj;
+  if (obj instanceof Date) return obj as unknown as T;
   if (obj instanceof Prisma.Decimal) return obj.toNumber() as unknown as T;
   if (Array.isArray(obj)) return obj.map(serializeDecimals) as unknown as T;
   if (typeof obj === "object") {
     const out: any = {};
-    for (const [k, v] of Object.entries(obj as any))
+    for (const [k, v] of Object.entries(obj as any)) {
       out[k] = serializeDecimals(v);
+    }
     return out;
   }
   return obj;
