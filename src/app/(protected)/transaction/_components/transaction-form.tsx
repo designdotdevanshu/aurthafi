@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,6 +38,7 @@ import { transactionSchema } from "@/lib/schema";
 import { CalendarIcon, Loader2 } from "lucide-react";
 
 type AddTransactionFormProps = {
+  editId?: string | null;
   accounts: Account[] | null;
   categories: Category[];
   editMode?: boolean;
@@ -45,14 +46,13 @@ type AddTransactionFormProps = {
 };
 
 export function AddTransactionForm({
+  editId = null,
   accounts,
   categories,
   editMode = false,
   initialData = null,
 }: AddTransactionFormProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const editId = searchParams.get("edit");
 
   const form = useForm<z.infer<typeof transactionSchema>>({
     resolver: zodResolver(transactionSchema),
