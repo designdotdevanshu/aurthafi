@@ -13,7 +13,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="scroll-pt-10 scroll-smooth">
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className="scroll-pt-10 scroll-smooth">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Header />
