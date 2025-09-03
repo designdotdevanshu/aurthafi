@@ -16,11 +16,6 @@ export const auth = betterAuth({
     autoSignIn: false,
     async sendResetPassword({ user, url }) {
       try {
-        console.log("Attempting to send reset email to:", user.email);
-        console.log("Reset URL:", url);
-        console.log("From email:", process.env.RESEND_FROM_EMAIL);
-
-        // Check if required environment variables are set
         if (!process.env.RESEND_API_KEY) {
           throw new Error("RESEND_API_KEY environment variable is not set");
         }
@@ -28,23 +23,21 @@ export const auth = betterAuth({
           throw new Error("RESEND_FROM_EMAIL environment variable is not set");
         }
 
-        const result = await resend.emails.send({
+        await resend.emails.send({
           from: process.env.RESEND_FROM_EMAIL!, // e.g. "no-reply@yourdomain.com"
-          // to: user.email,
-          to: "design.devanshu@gmail.com",
+          to: user.email,
           subject: "Reset Your Password",
-          html: `
-            <p>Hello ${user.name ?? user.email},</p>
-            <p>You requested a password reset. Click the link below to set a new password. This link expires in 1 hour.</p>
-            <p><a href="${url}" style="color: #2563EB;">Reset Password</a></p>
-            <p>If you didn't request this, you can safely ignore this email.</p>
-          `,
+          html: `<div style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #ffffff; color: #111827; padding: 24px; border-radius: 8px; max-width: 480px; margin: 0 auto; border: 1px solid #e5e7eb">
+                  <h1 style="font-size: 20px; font-weight: 800; margin: 0 0 16px; background: linear-gradient(to right, #2563eb, #9333ea); -webkit-background-clip: text; -webkit-text-fill-color: transparent">Reset Your Password</h1>
+                  <p style="margin: 0 0 16px">Hello ${user.name ?? user.email},</p>
+                  <p style="margin: 0 0 16px">You requested a password reset. Click the button below to set a new password. This link expires in 1 hour.</p>
+                  <a href="${url}" style="display: inline-block; padding: 12px 20px; font-weight: 600; color: #fff; background: linear-gradient(to bottom right, #2563eb, #9333ea); border-radius: 6px; text-decoration: none"> Reset Password </a>
+                  <p style="margin: 24px 0 0; font-size: 14px; color: #6b7280">If you didn't request this, you can safely ignore this email.</p>
+                </div>`,
         });
-
-        console.log("Email sent successfully:", result);
       } catch (error) {
         console.error("Failed to send reset email:", error);
-        throw error; // Re-throw to let better-auth handle it
+        throw error;
       }
     },
   },
